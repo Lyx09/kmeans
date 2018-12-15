@@ -83,6 +83,8 @@ unsigned char classify(float *vec, float *means, unsigned dim, unsigned char K, 
     return min;
 }
 
+// FIXME Slow
+// Compute the means of each cluster
 void means_compute(float *means, unsigned char *c, float *data, unsigned *card,
         unsigned nbVec, unsigned dim, unsigned char K)
 {
@@ -103,16 +105,14 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
     unsigned iter = 0;
     double e, diffErr = DBL_MAX, Err = DBL_MAX;
 
-    float *means = calloc(dim * K, sizeof(float)); // Matrix of dimension of each cluster
-    unsigned *card = calloc(K, sizeof(unsigned)); // Used to compute the mean
+    float *means = calloc(dim * K, sizeof(float));            // Matrix of dimension of each cluster
+    unsigned *card = calloc(K, sizeof(unsigned));             // Used to compute the mean
     unsigned char* c = malloc(sizeof(unsigned char) * nbVec); // Vector[i] belongs to cluster c[i]
 
     // Random init of c
     for(unsigned i = 0; i < nbVec; ++i)
-        c[i] = rand() / (RAND_MAX + 1.) * K;        // Optimize rand ?
+        c[i] = rand() / (RAND_MAX + 1.) * K;                  // Optimize rand ?
 
-    // FIXME Slow
-    // Compute the means of each cluster
     means_compute(means, c, data, card, nbVec, dim, K);
 
     while ((iter < maxIter) && (diffErr > minErr))
@@ -131,8 +131,6 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
         // update Mean
         memset(means, 0, dim * K * sizeof(float));
         memset(card, 0, K * sizeof(unsigned));
-
-        // FIXME Slow
         means_compute(means, c, data, card, nbVec, dim, K);
 
         ++iter;
