@@ -52,6 +52,24 @@ sys 0.63
        [ 52671, 157010,  90319],
        [ 50689,  86310, 163001]]))
 
+3 AFTER SQRT REMOVE
+time -p ./kmeans 3 2 .01 2351 900000 Xtrain.dat output.dat
+Start Kmeans on Xtrain.dat datafile [K = 3, dim = 2351, nbVec = 900000]
+[start] Kmeans
+Iteration: 1, Error: 301124106643675136.000000
+Iteration: 2, Error: 172161833155128000.000000
+[end] Kmeans
+real 73.75
+user 72.44
+sys 1.29
+林育贤[0] kmeans$ python eval.py output.dat Ytrain.dat
+('[', 1, ', ', -1, ', ', 0, ']')
+('Accuracy: ', 0.41644777777777775)
+('Precision: ', 0.40351386927651695)
+('Recall: ', 0.4164477777777778)
+('Confusion Matrix: ', array([[ 54792, 139203, 106005],
+       [ 52671, 157010,  90319],
+       [ 50689,  86310, 163001]]))
 
 FASTEST
 time -p ./kmeans 3 2 .01 2351 900000 Xtrain.dat output.dat

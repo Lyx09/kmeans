@@ -2,7 +2,6 @@
 #include <fcntl.h>
 #include <float.h>
 #include <limits.h>
-#include <math.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -63,17 +62,21 @@ double distance(float *vec1, float *vec2, unsigned dim) {
         double d = *vec1 - *vec2;
         dist += d * d;
     }
-
-    return (sqrt(dist));
+    return dist;
 }
 
-unsigned char classify(float *vec, float *means, unsigned dim, unsigned char K, double *e) {
+// Classify data
+unsigned char classify(float *vec, float *means, unsigned dim, 
+        unsigned char K, double *e)
+{
     unsigned char min = 0;
     float dist, distMin = FLT_MAX;
 
-    for(unsigned i = 0; i < K; ++i) {
+    for(unsigned i = 0; i < K; ++i)
+    {
         dist = distance(vec, means + i * dim, dim);
-        if(dist < distMin) {
+        if(dist < distMin)
+        {
             distMin = dist;
             min = i;
         }
@@ -83,7 +86,6 @@ unsigned char classify(float *vec, float *means, unsigned dim, unsigned char K, 
     return min;
 }
 
-// FIXME Slow
 // Compute the means of each cluster
 void means_compute(float *means, unsigned char *c, float *data, unsigned *card,
         unsigned nbVec, unsigned dim, unsigned char K)
@@ -113,15 +115,13 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
     for(unsigned i = 0; i < nbVec; ++i)
         c[i] = rand() / (RAND_MAX + 1.) * K;                  // Optimize rand ?
 
-    means_compute(means, c, data, card, nbVec, dim, K);
+    means_compute(means, c, data, card, nbVec, dim, K); //check
 
     while ((iter < maxIter) && (diffErr > minErr))
     {
         diffErr = Err;
-        // Classify data
         Err = 0.;
 
-        // FIXME Slow
         for(unsigned i = 0; i < nbVec; ++i)
         {
             c[i] = classify(data + i * dim, means, dim, K, &e);
