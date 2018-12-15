@@ -99,6 +99,7 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
     for(unsigned i = 0; i < nbVec; ++i)
         c[i] = rand() / (RAND_MAX + 1.) * K;        // Optimize rand ?
 
+    // FIXME Slow
     // Compute the means of each cluster
     for(unsigned i = 0; i < nbVec; ++i)
     {
@@ -115,6 +116,8 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
         diffErr = Err;
         // Classify data
         Err = 0.;
+
+        // FIXME Slow
         for(unsigned i = 0; i < nbVec; ++i)
         {
             c[i] = classify(data + i * dim, means, dim, K, &e);
@@ -124,6 +127,8 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
         // update Mean
         memset(means, 0, dim * K * sizeof(float));
         memset(card, 0, K * sizeof(unsigned));
+
+        // FIXME Slow
         for(unsigned i = 0; i < nbVec; ++i) {
             for(unsigned j = 0; j < dim; ++j)
                 means[c[i] * dim + j] += data[i * dim  + j];
