@@ -84,23 +84,19 @@ unsigned char classify(float *vec, float *means, unsigned dim, unsigned char K, 
 
 
 
-unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim, unsigned char K, double minErr, unsigned maxIter)
+unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim, 
+        unsigned char K, double minErr, unsigned maxIter)
 {
     unsigned iter = 0;
     double e, diffErr = DBL_MAX, Err = DBL_MAX;
 
-    float *means = malloc(sizeof(float) * dim * K);
-    unsigned *card = malloc(sizeof(unsigned) * K);
+    float *means = calloc(dim * K, sizeof(float));
+    unsigned *card = calloc(K, sizeof(unsigned));
     unsigned char* c = malloc(sizeof(unsigned char) * nbVec);
 
     // Random init of c
     for(unsigned i = 0; i < nbVec; ++i)
         c[i] = rand() / (RAND_MAX + 1.) * K;
-
-    for(unsigned i = 0; i < dim * K; ++i)
-        means[i] = 0.;
-    for(unsigned i = 0; i < K; ++i)
-        card[i] = 0.;
 
     for(unsigned i = 0; i < nbVec; ++i) {
         for(unsigned j = 0; j < dim; ++j)
@@ -160,11 +156,13 @@ int main(int ac, char *av[])
     printf("Start Kmeans on %s datafile [K = %d, dim = %d, nbVec = %d]\n", av[6], K, dim, nbVec);
 
     float *tab = loadData(av[6], nbVec, dim);
+    printf("[start] Kmeans\n");
     unsigned char *classif = Kmeans(tab, nbVec, dim, K, minErr, maxIter);
+    printf("[end] Kmeans\n");
     writeClassinFloatFormat(classif, nbVec, av[7]);
+
     // free(tab);
     munmap(tab, nbVec * dim * sizeof(float));
     free(classif);
-
     return 0;
 }
