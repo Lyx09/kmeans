@@ -83,24 +83,9 @@ unsigned char classify(float *vec, float *means, unsigned dim, unsigned char K, 
     return min;
 }
 
-
-
-unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim, 
-        unsigned char K, double minErr, unsigned maxIter)
+void means_compute(float *means, unsigned char *c, float *data, unsigned *card,
+        unsigned nbVec, unsigned dim, unsigned char K)
 {
-    unsigned iter = 0;
-    double e, diffErr = DBL_MAX, Err = DBL_MAX;
-
-    float *means = calloc(dim * K, sizeof(float)); // Matrix of dimension of each cluster
-    unsigned *card = calloc(K, sizeof(unsigned)); // 
-    unsigned char* c = malloc(sizeof(unsigned char) * nbVec); // Vector[i] belongs to cluster c[i]
-
-    // Random init of c
-    for(unsigned i = 0; i < nbVec; ++i)
-        c[i] = rand() / (RAND_MAX + 1.) * K;        // Optimize rand ?
-
-    // FIXME Slow
-    // Compute the means of each cluster
     for(unsigned i = 0; i < nbVec; ++i)
     {
         for(unsigned j = 0; j < dim; ++j)
@@ -110,6 +95,25 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
     for(unsigned i = 0; i < K; ++i)
         for(unsigned j = 0; j < dim; ++j)
             means[i * dim + j] /= card[i];
+}
+
+unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim, 
+        unsigned char K, double minErr, unsigned maxIter)
+{
+    unsigned iter = 0;
+    double e, diffErr = DBL_MAX, Err = DBL_MAX;
+
+    float *means = calloc(dim * K, sizeof(float)); // Matrix of dimension of each cluster
+    unsigned *card = calloc(K, sizeof(unsigned)); // Used to compute the mean
+    unsigned char* c = malloc(sizeof(unsigned char) * nbVec); // Vector[i] belongs to cluster c[i]
+
+    // Random init of c
+    for(unsigned i = 0; i < nbVec; ++i)
+        c[i] = rand() / (RAND_MAX + 1.) * K;        // Optimize rand ?
+
+    // FIXME Slow
+    // Compute the means of each cluster
+    means_compute(means, c, data, card, nbVec, dim, K);
 
     while ((iter < maxIter) && (diffErr > minErr))
     {
@@ -129,14 +133,8 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
         memset(card, 0, K * sizeof(unsigned));
 
         // FIXME Slow
-        for(unsigned i = 0; i < nbVec; ++i) {
-            for(unsigned j = 0; j < dim; ++j)
-                means[c[i] * dim + j] += data[i * dim  + j];
-            ++card[c[i]];
-        }
-        for(unsigned i = 0; i < K; ++i)
-            for(unsigned j = 0; j < dim; ++j)
-                means[i * dim + j] /= card[i];
+        means_compute(means, c, data, card, nbVec, dim, K);
+
         ++iter;
         Err /= nbVec;
         diffErr = fabs(diffErr - Err);
