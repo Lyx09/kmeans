@@ -63,6 +63,8 @@ double distance(float *vec1, float *vec2, unsigned dim) {
         double d = *vec1 - *vec2;
         dist += d * d;
     }
+    //I removed the sqrt on dist because we only care about the comparison
+    //But now the error is broken (it was based on the minimal distance)
     return dist;
 }
 
@@ -108,18 +110,21 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
     unsigned iter = 0;
     double e, diffErr = DBL_MAX, Err = DBL_MAX;
 
-    float *means = calloc(dim * K, sizeof(float));            // Matrix of dimension of each cluster
-    unsigned *card = calloc(K, sizeof(unsigned));             // Used to compute the mean
+    float *means = malloc(dim * K, sizeof(float));            // Matrix of dimension of each cluster
+    unsigned *card = malloc(K, sizeof(unsigned));             // Used to compute the mean
     unsigned char* c = malloc(sizeof(unsigned char) * nbVec); // Vector[i] belongs to cluster c[i]
 
     // Random init of c
     for(unsigned i = 0; i < nbVec; ++i)
         c[i] = rand() / (RAND_MAX + 1.) * K;                  // Optimize rand ?
 
-    means_compute(means, c, data, card, nbVec, dim, K); //check
-
     while ((iter < maxIter) && (diffErr > minErr))
     {
+        // update Mean
+        memset(means, 0, dim * K * sizeof(float));
+        memset(card, 0, K * sizeof(unsigned));
+        means_compute(means, c, data, card, nbVec, dim, K);
+
         diffErr = Err;
         Err = 0.;
 
@@ -128,11 +133,6 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
             c[i] = classify(data + i * dim, means, dim, K, &e);
             Err += e;
         }
-
-        // update Mean
-        memset(means, 0, dim * K * sizeof(float));
-        memset(card, 0, K * sizeof(unsigned));
-        means_compute(means, c, data, card, nbVec, dim, K);
 
         ++iter;
         Err /= nbVec;
