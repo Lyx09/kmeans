@@ -91,15 +91,17 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
     unsigned iter = 0;
     double e, diffErr = DBL_MAX, Err = DBL_MAX;
 
-    float *means = calloc(dim * K, sizeof(float)); // Means of each class
+    float *means = calloc(dim * K, sizeof(float)); // Matrix of dimension of each cluster
     unsigned *card = calloc(K, sizeof(unsigned)); // 
-    unsigned char* c = malloc(sizeof(unsigned char) * nbVec); // Vector[i] belongs to class c[i]
+    unsigned char* c = malloc(sizeof(unsigned char) * nbVec); // Vector[i] belongs to cluster c[i]
 
     // Random init of c
     for(unsigned i = 0; i < nbVec; ++i)
-        c[i] = rand() / (RAND_MAX + 1.) * K;
+        c[i] = rand() / (RAND_MAX + 1.) * K;        // Optimize rand ?
 
-    for(unsigned i = 0; i < nbVec; ++i) {
+    // Compute the means of each cluster
+    for(unsigned i = 0; i < nbVec; ++i)
+    {
         for(unsigned j = 0; j < dim; ++j)
             means[c[i] * dim + j] += data[i * dim  + j];
         ++card[c[i]];
@@ -108,11 +110,13 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
         for(unsigned j = 0; j < dim; ++j)
             means[i * dim + j] /= card[i];
 
-    while ((iter < maxIter) && (diffErr > minErr)) {
+    while ((iter < maxIter) && (diffErr > minErr))
+    {
         diffErr = Err;
         // Classify data
         Err = 0.;
-        for(unsigned i = 0; i < nbVec; ++i) {
+        for(unsigned i = 0; i < nbVec; ++i)
+        {
             c[i] = classify(data + i * dim, means, dim, K, &e);
             Err += e;
         }
