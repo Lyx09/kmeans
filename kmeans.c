@@ -3,6 +3,7 @@
 #include <float.h>
 #include <limits.h>
 #include <math.h>
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/mman.h>
@@ -90,9 +91,9 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
     unsigned iter = 0;
     double e, diffErr = DBL_MAX, Err = DBL_MAX;
 
-    float *means = calloc(dim * K, sizeof(float));
-    unsigned *card = calloc(K, sizeof(unsigned));
-    unsigned char* c = malloc(sizeof(unsigned char) * nbVec);
+    float *means = calloc(dim * K, sizeof(float)); // Means of each class
+    unsigned *card = calloc(K, sizeof(unsigned)); // 
+    unsigned char* c = malloc(sizeof(unsigned char) * nbVec); // Vector[i] belongs to class c[i]
 
     // Random init of c
     for(unsigned i = 0; i < nbVec; ++i)
@@ -117,10 +118,8 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
         }
 
         // update Mean
-        for(unsigned i = 0; i < dim * K; ++i)
-            means[i] = 0.;
-        for(unsigned i = 0; i < K; ++i)
-            card[i] = 0.;
+        memset(means, 0, dim * K * sizeof(float));
+        memset(card, 0, K * sizeof(unsigned));
         for(unsigned i = 0; i < nbVec; ++i) {
             for(unsigned j = 0; j < dim; ++j)
                 means[c[i] * dim + j] += data[i * dim  + j];
