@@ -110,8 +110,8 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
     unsigned iter = 0;
     double e, diffErr = DBL_MAX, Err = DBL_MAX;
 
-    float *means = malloc(dim * K, sizeof(float));            // Matrix of dimension of each cluster
-    unsigned *card = malloc(K, sizeof(unsigned));             // Used to compute the mean
+    float *means = malloc(dim * K * sizeof(float));           // Matrix of dimension of each cluster
+    unsigned *card = malloc(K * sizeof(unsigned));            // Used to compute the mean
     unsigned char* c = malloc(sizeof(unsigned char) * nbVec); // Vector[i] belongs to cluster c[i]
 
     // Random init of c
