@@ -1,0 +1,85 @@
+REFERENCE
+time -p ./kmeans 3 2 .01 2351 900000 Xtrain.dat output.dat
+Start Kmeans on Xtrain.dat datafile [K = 3, dim = 2351, nbVec = 900000]
+Iteration: 1, Error: 306825579.398348
+Iteration: 2, Error: 185975620.161035
+real 75.75
+user 74.07
+sys 1.64
+-------------------------------
+('[', 1, ', ', -1, ', ', 0, ']')
+('Accuracy: ', 0.41644777777777775)
+('Precision: ', 0.40351386927651695)
+('Recall: ', 0.4164477777777778)
+('Confusion Matrix: ', array([[ 54792, 139203, 106005],
+       [ 52671, 157010,  90319],
+       [ 50689,  86310, 163001]]))
+
+1 AFTER CALLOC:
+time -p ./kmeans 3 2 .01 2351 900000 Xtrain.dat output.dat
+Start Kmeans on Xtrain.dat datafile [K = 3, dim = 2351, nbVec = 900000]
+[start] Kmeans
+Iteration: 1, Error: 306825579.398348
+Iteration: 2, Error: 185975620.161035
+[end] Kmeans
+real 78.86
+user 73.67
+sys 4.14
+('[', 1, ', ', -1, ', ', 0, ']')
+('Accuracy: ', 0.41644777777777775)
+('Precision: ', 0.40351386927651695)
+('Recall: ', 0.4164477777777778)
+('Confusion Matrix: ', array([[ 54792, 139203, 106005],
+       [ 52671, 157010,  90319],
+       [ 50689,  86310, 163001]]))
+
+2 AFTER MEMSET:
+time -p ./kmeans 3 2 .01 2351 900000 Xtrain.dat output.dat
+Start Kmeans on Xtrain.dat datafile [K = 3, dim = 2351, nbVec = 900000]
+[start] Kmeans
+Iteration: 1, Error: 306825579.398348
+Iteration: 2, Error: 185975620.161035
+[end] Kmeans
+real 72.08
+user 71.44
+sys 0.63
+林育贤[0] kmeans$ python eval.py output.dat Ytrain.dat
+('[', 1, ', ', -1, ', ', 0, ']')
+('Accuracy: ', 0.41644777777777775)
+('Precision: ', 0.40351386927651695)
+('Recall: ', 0.4164477777777778)
+('Confusion Matrix: ', array([[ 54792, 139203, 106005],
+       [ 52671, 157010,  90319],
+       [ 50689,  86310, 163001]]))
+
+
+FASTEST
+time -p ./kmeans 3 2 .01 2351 900000 Xtrain.dat output.dat
+Start Kmeans on Xtrain.dat datafile [K = 3, dim = 2351, nbVec = 900000]
+Iteration: 1, Error: 306825579.398183
+Iteration: 2, Error: 185975577.147523
+real 12.14
+user 9.95
+sys 1.90
+
+DANGER:
+time -p ./kmeans 3 2 .01 2351 900000 Xtrain.dat output.dat
+Start Kmeans on Xtrain.dat datafile [K = 3, dim = 2351, nbVec = 900000]
+Iteration: 1, Error: 306825579.398183
+Iteration: 2, Error: 185975577.147523
+real 8.55
+user 8.03
+sys 0.51
+
+VECTORIZE:
+time -p ./kmeans 3 2 .01 2351 900000 Xtrain.dat output.dat
+Start Kmeans on Xtrain.dat datafile [K = 3, dim = 2351, nbVec = 900000]
+Iteration: 1, Error: 306825579.398348
+Iteration: 2, Error: 185975620.161035
+real 25.77
+user 23.89
+sys 1.55
+
+PARALELIZATION
+
+INTRINSICS
