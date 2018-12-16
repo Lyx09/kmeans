@@ -57,7 +57,7 @@ void writeClassinFloatFormat(unsigned char *data, unsigned nbelt, char *fileName
     fclose(fp);
 }
 
-double distance(float *vec1, float *vec2, unsigned dim) {
+inline double distance(float *vec1, float *vec2, unsigned dim) {
     double dist = 0;
     for(unsigned i = 0; i < dim; ++i, ++vec1, ++vec2) {
         double d = *vec1 - *vec2;
@@ -69,7 +69,7 @@ double distance(float *vec1, float *vec2, unsigned dim) {
 }
 
 // Classify data
-unsigned char classify(float *vec, float *means, unsigned dim, 
+inline unsigned char classify(float *vec, float *means, unsigned dim, 
         unsigned char K, double *e)
 {
     unsigned char min = 0;
@@ -90,7 +90,7 @@ unsigned char classify(float *vec, float *means, unsigned dim,
 }
 
 // Compute the means of each cluster
-void means_compute(float *means, unsigned char *c, float *data, unsigned *card,
+inline void means_compute(float *means, unsigned char *c, float *data, unsigned *card,
         unsigned nbVec, unsigned dim, unsigned char K)
 {
     for(unsigned i = 0; i < nbVec; ++i)
