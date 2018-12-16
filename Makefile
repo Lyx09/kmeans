@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra -pedantic -std=c99 -fopenmp
+CFLAGS = -Wall -Werror -Wextra -pedantic -std=c99 -fopenmp -mavx2
 LFLAGS = -lm
 SRC = kmeans.c
 REF_SRC = ref_kmeans.c
