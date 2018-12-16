@@ -67,7 +67,7 @@ static inline double distance(float *vec1, float *vec2, unsigned dim) {
         double d = *vec1 - *vec2;
         dist += d * d;
     }
-    return sqrt(dist);
+    return sqrt(dist); //sqrt can be removed but it will break the error
 }
 
 // Classify data
