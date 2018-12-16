@@ -119,5 +119,130 @@ user 23.89
 sys 1.55
 
 PARALELIZATION
+time -p ./kmeans 3 2 .01 2351 900000 Xtrain.dat output.dat
+Start Kmeans on Xtrain.dat datafile [K = 3, dim = 2351, nbVec = 900000]
+[start] Kmeans
+Iteration: 1, Error: 31833585.707976
+Iteration: 2, Error: 18307472.237133
+[end] Kmeans
+real 18.99
+user 18.31
+sys 15.42
+python eval.py output.dat Ytrain.dat
+('[', 1, ', ', 0, ', ', -1, ']')
+('Accuracy: ', 0.41476111111111114)
+('Precision: ', 0.40200574908023023)
+('Recall: ', 0.4147611111111111)
+('Confusion Matrix: ', array([[ 56457, 138409, 105134],
+       [ 53764, 156413,  89823],
+       [ 54340,  85245, 160415]]))
 
 INTRINSICS
+
+
+
+
+LOG2
+REF
+gcc -o kmeans kmeans.c -Wall -Werror -Wextra -pedantic -std=c99 -fopenmp -mavx2 -lm
+time -p ./kmeans 3 2 .01 2351 900000 Xtrain.dat output.dat
+Start Kmeans on Xtrain.dat datafile [K = 3, dim = 2351, nbVec = 900000]
+[start] Kmeans
+Iteration: 1, Error: 301124106643675136.000000
+Iteration: 2, Error: 172161833155128000.000000
+[end] Kmeans
+real 69.29
+user 62.98
+sys 6.20
+python eval.py output.dat Ytrain.dat
+('[', 1, ', ', -1, ', ', 0, ']')
+('Accuracy: ', 0.41644777777777775)
+('Precision: ', 0.40351386927651695)
+('Recall: ', 0.4164477777777778)
+('Confusion Matrix: ', array([[ 54792, 139203, 106005],
+       [ 52671, 157010,  90319],
+       [ 50689,  86310, 163001]]))
+
+
+PARALEL MEAN + SIMD
+gcc -o kmeans kmeans.c -Wall -Werror -Wextra -pedantic -std=c99 -fopenmp -mavx2 -lm
+time -p ./kmeans 3 2 .01 2351 900000 Xtrain.dat output.dat
+Start Kmeans on Xtrain.dat datafile [K = 3, dim = 2351, nbVec = 900000]
+[start] Kmeans
+Iteration: 1, Error: 296675404710376704.000000
+Iteration: 2, Error: 173210886008163776.000000
+[end] Kmeans
+real 52.06
+user 82.68
+sys 3.75
+python eval.py output.dat Ytrain.dat
+('[', 0, ', ', 1, ', ', 1, ']')
+('Accuracy: ', 0.4132988888888889)
+/home/lyx/.local/lib/python2.7/site-packages/sklearn/metrics/classification.py:1143: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples.
+  'precision', 'predicted', average, warn_for)
+('Precision: ', 0.27652059112041766)
+('Recall: ', 0.4132988888888889)
+('Confusion Matrix: ', array([[     0, 125924, 174076],
+       [     0, 143557, 156443],
+       [     0,  71588, 228412]]))
+
+PARALLEL MEAN
+gcc -o kmeans kmeans.c -Wall -Werror -Wextra -pedantic -std=c99 -fopenmp -mavx2 -lm
+time -p ./kmeans 3 2 .01 2351 900000 Xtrain.dat output.dat
+Start Kmeans on Xtrain.dat datafile [K = 3, dim = 2351, nbVec = 900000]
+[start] Kmeans
+Iteration: 1, Error: 299662412955704512.000000
+Iteration: 2, Error: 173559737713522656.000000
+[end] Kmeans
+real 56.39
+user 83.35
+sys 5.18
+python eval.py output.dat Ytrain.dat
+('[', 1, ', ', 0, ', ', -1, ']')
+('Accuracy: ', 0.42041555555555554)
+('Precision: ', 0.40584693768740593)
+('Recall: ', 0.42041555555555554)
+('Confusion Matrix: ', array([[ 56425, 130765, 112810],
+       [ 53729, 150295,  95976],
+       [ 54303,  74043, 171654]]))
+
+PARALLEL MEAN + CLASSIFY
+gcc -o kmeans kmeans.c -Wall -Werror -Wextra -pedantic -std=c99 -fopenmp -mavx2 -lm
+time -p ./kmeans 3 2 .01 2351 900000 Xtrain.dat output.dat
+Start Kmeans on Xtrain.dat datafile [K = 3, dim = 2351, nbVec = 900000]
+[start] Kmeans
+Iteration: 1, Error: 297341373248447168.000000
+Iteration: 2, Error: 173141116544224640.000000
+[end] Kmeans
+real 28.65
+user 105.71
+sys 12.17
+python eval.py output.dat Ytrain.dat
+('[', 0, ', ', 1, ', ', -1, ']')
+('Accuracy: ', 0.4248033333333333)
+('Precision: ', 0.40967010183259545)
+('Recall: ', 0.42480333333333337)
+('Confusion Matrix: ', array([[ 56605, 133758, 109637],
+       [ 53962, 155523,  90515],
+       [ 54545,  75260, 170195]]))
+
+PARALLEL MEAN + CLASSIFY + FAST
+time -p ./kmeans 3 2 .01 2351 900000 Xtrain.dat output.dat
+Start Kmeans on Xtrain.dat datafile [K = 3, dim = 2351, nbVec = 900000]
+[start] Kmeans
+Iteration: 1, Error: 25092039379269200.000000
+Iteration: 2, Error: 18151065998744356.000000
+[end] Kmeans
+real 20.13
+user 19.70
+sys 17.76
+python eval.py output.dat Ytrain.dat
+('[', 1, ', ', 0, ', ', -1, ']')
+('Accuracy: ', 0.425)
+('Precision: ', 0.4098677428396891)
+('Recall: ', 0.425)
+('Confusion Matrix: ', array([[ 56461, 134432, 109107],
+       [ 53777, 156117,  90106],
+       [ 54342,  75736, 169922]]))
+
+
