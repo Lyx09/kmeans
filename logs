@@ -245,4 +245,64 @@ python eval.py output.dat Ytrain.dat
        [ 53777, 156117,  90106],
        [ 54342,  75736, 169922]]))
 
+PARALLEL
+gcc -o kmeans kmeans.c -Wall -Werror -Wextra -pedantic -std=c99 -fopenmp -mavx2 -g -lm
+time -p ./kmeans 3 2 .01 2351 900000 Xtrain.dat output.dat
+Start Kmeans on Xtrain.dat datafile [K = 3, dim = 2351, nbVec = 900000]
+[start] Kmeans
+Iteration: 1, Error: 306825579.398348
+Iteration: 2, Error: 185975620.161035
+[end] Kmeans
+real 66.97
+user 64.92
+sys 1.69
+python eval.py output.dat Ytrain.dat
+('[', 1, ', ', -1, ', ', 0, ']')
+('Accuracy: ', 0.41644777777777775)
+('Precision: ', 0.40351386927651695)
+('Recall: ', 0.4164477777777778)
+('Confusion Matrix: ', array([[ 54792, 139203, 106005],
+       [ 52671, 157010,  90319],
+       [ 50689,  86310, 163001]]))
 
+
+NO PARALLEL + INTRIN DISTANCE
+gcc -o kmeans kmeans.c -Wall -Werror -Wextra -pedantic -std=c99 -fopenmp -mavx2 -g -lm
+time -p ./kmeans 3 2 .01 2351 900000 Xtrain.dat output.dat
+Start Kmeans on Xtrain.dat datafile [K = 3, dim = 2351, nbVec = 900000]
+[start] Kmeans
+Iteration: 1, Error: 306825580.046539
+Iteration: 2, Error: 185975620.089153
+[end] Kmeans
+real 53.06
+user 46.48
+sys 6.45
+python eval.py output.dat Ytrain.dat
+('[', 1, ', ', -1, ', ', 0, ']')
+('Accuracy: ', 0.41644777777777775)
+('Precision: ', 0.40351386927651695)
+('Recall: ', 0.4164477777777778)
+('Confusion Matrix: ', array([[ 54792, 139203, 106005],
+       [ 52671, 157010,  90319],
+       [ 50689,  86310, 163001]]))
+
+
+NO PARALLEL + INTRIN MEAN + DISTANCE
+gcc -o kmeans kmeans.c -Wall -Werror -Wextra -pedantic -std=c99 -fopenmp -mavx2 -g -lm
+time -p ./kmeans 3 2 .01 2351 900000 Xtrain.dat output.dat
+Start Kmeans on Xtrain.dat datafile [K = 3, dim = 2351, nbVec = 900000]
+[start] Kmeans
+Iteration: 1, Error: 300894002.119874
+Iteration: 2, Error: 196624558.534714
+[end] Kmeans
+real 32.40
+user 39.83
+sys 3.58
+python eval.py output.dat Ytrain.dat
+('[', 1, ', ', 0, ', ', -1, ']')
+('Accuracy: ', 0.4189411111111111)
+('Precision: ', 0.4045050241853698)
+('Recall: ', 0.41894111111111104)
+('Confusion Matrix: ', array([[ 54674, 127460, 117866],
+       [ 52471, 145470, 102059],
+       [ 50606,  72491, 176903]]))
