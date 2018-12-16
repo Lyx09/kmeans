@@ -89,7 +89,7 @@ static inline double distance_simd(float *vec1, float *vec2, unsigned dim)
 static inline void means_compute_simd(float *means, unsigned char *c,
         float *data, unsigned *card, unsigned nbVec, unsigned dim, unsigned char K)
 {
-#pragma omp parallel for
+//#pragma omp parallel for
     for(unsigned i = 0; i < nbVec; ++i)
     {
         unsigned j = 0;
@@ -106,8 +106,21 @@ static inline void means_compute_simd(float *means, unsigned char *c,
         ++card[c[i]];
     }
     for(unsigned i = 0; i < K; ++i)
-        for(unsigned j = 0; j < dim; ++j)
+    {
+        unsigned j = 0;
+        /*  Need to convert char to float
+        for(; j < dim; ++j)
+        {
+            __m256 mn = _mm256_loadu_ps(&means[i * dim + j]);
+            __m256i cd_epi32 = _mm256_loadu_si256(&card[i]);
+            __m256 cd_ps = _mm256_cvtepi32_ps(cd_epi32);
+            __m256 res = _mm256_div_ps(mn, cd_ps);
+            _mm256_storeu_ps(&means[i * dim + j], res);
+        }
+        */
+        for(; j < dim; ++j)
             means[i * dim + j] /= card[i];
+    }
 }
 
 
