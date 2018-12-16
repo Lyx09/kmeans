@@ -306,3 +306,22 @@ python eval.py output.dat Ytrain.dat
 ('Confusion Matrix: ', array([[ 54792, 139203, 106005],
        [ 52671, 157010,  90319],
        [ 50689,  86310, 163001]]))
+
+PARALLEL + ALL INTRINS + FASTEST
+time -p ./kmeans 3 2 .01 2351 900000 Xtrain.dat output.dat
+Start Kmeans on Xtrain.dat datafile [K = 3, dim = 2351, nbVec = 900000]
+[start] Kmeans
+Iteration: 1, Error: 32269754.921221
+Iteration: 2, Error: 18641929.568769
+[end] Kmeans
+real 12.99
+user 16.32
+sys 9.59
+python eval.py output.dat Ytrain.dat
+('[', 1, ', ', 0, ', ', -1, ']')
+('Accuracy: ', 0.4238811111111111)
+('Precision: ', 0.4087249326586389)
+('Recall: ', 0.4238811111111111)
+('Confusion Matrix: ', array([[ 54791, 131847, 113362],
+       [ 52662, 152016,  95322],
+       [ 50688,  74626, 174686]]))
