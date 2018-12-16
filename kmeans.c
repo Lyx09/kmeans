@@ -63,11 +63,15 @@ void writeClassinFloatFormat(unsigned char *data, unsigned nbelt, char *fileName
 
 // ----- SIMD FUNCTIONS -----
 static inline double distance_simd(float *vec1, float *vec2, unsigned dim) {
-    //_mm256_load_ps
     double dist = 0;
-    for(unsigned i = 0; i < dim; ++i, ++vec1, ++vec2) {
-        double d = *vec1 - *vec2;
-        dist += d * d;
+    for(unsigned i = 0; i < dim; i += 8)
+    {
+        __m256 v1 = _mm256_load_ps(vec1);
+        __m256 v2 = _mm256_load_ps(vec2);
+        __m256 d = _mm256_sub_ps(v1, v2);
+        d = _mm256_mul_ps(d, d);
+        float *res = (float *)&d;
+        dist += res[0] + res[1] + res[2] + res[3] + res[4] + res[5] + res[6] + res[7];
     }
     return sqrt(dist); //sqrt can be removed but it will break the error
 }
@@ -131,6 +135,7 @@ static inline void means_compute(float *means, unsigned char *c, float *data,
             means[c[i] * dim + j] += data[i * dim  + j];
         ++card[c[i]];
     }
+#pragma omp critical
     for(unsigned i = 0; i < K; ++i)
         for(unsigned j = 0; j < dim; ++j)
             means[i * dim + j] /= card[i];
@@ -155,6 +160,8 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
         memset(means, 0, dim * K * sizeof(float));            // Use bzero() instead ?
         memset(card, 0, K * sizeof(unsigned));                // Use bzero() instead ?
         means_compute(means, c, data, card, nbVec, dim, K);
+
+#pragma omp critical
 
         diffErr = Err;
         Err = 0.;
