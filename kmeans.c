@@ -89,7 +89,7 @@ static inline double distance_simd(float *vec1, float *vec2, unsigned dim)
 static inline void means_compute_simd(float *means, unsigned char *c,
         float *data, unsigned *card, unsigned nbVec, unsigned dim, unsigned char K)
 {
-//#pragma omp parallel for
+#pragma omp parallel for
     for(unsigned i = 0; i < nbVec; ++i)
     {
         unsigned j = 0;
@@ -105,6 +105,8 @@ static inline void means_compute_simd(float *means, unsigned char *c,
             means[c[i] * dim + j] += data[i * dim  + j];
         ++card[c[i]];
     }
+
+#pragma omp critical
     for(unsigned i = 0; i < K; ++i)
     {
         unsigned j = 0;
@@ -161,14 +163,14 @@ static inline unsigned char classify(float *vec, float *means, unsigned dim,
 static inline void means_compute(float *means, unsigned char *c, float *data,
         unsigned *card, unsigned nbVec, unsigned dim, unsigned char K)
 {
-//#pragma omp parallel for
+#pragma omp parallel for
     for(unsigned i = 0; i < nbVec; ++i)
     {
         for(unsigned j = 0; j < dim; ++j)
             means[c[i] * dim + j] += data[i * dim  + j];
         ++card[c[i]];
     }
-//#pragma omp critical
+#pragma omp critical
     for(unsigned i = 0; i < K; ++i)
         for(unsigned j = 0; j < dim; ++j)
             means[i * dim + j] /= card[i];
@@ -194,12 +196,12 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
         memset(card, 0, K * sizeof(unsigned));                // Use bzero() instead ?
         means_compute_simd(means, c, data, card, nbVec, dim, K);
 
-//#pragma omp critical
+#pragma omp critical
 
         diffErr = Err;
         Err = 0.;
 
-//#pragma omp parallel for
+#pragma omp parallel for
         for(unsigned i = 0; i < nbVec; ++i)
         {
             c[i] = classify(data + i * dim, means, dim, K, &e);
