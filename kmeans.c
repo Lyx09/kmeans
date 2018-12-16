@@ -72,6 +72,23 @@ static inline double distance_simd(float *vec1, float *vec2, unsigned dim) {
     return sqrt(dist); //sqrt can be removed but it will break the error
 }
 
+static inline void means_compute_simd(float *means, unsigned char *c,
+        float *data, unsigned *card, unsigned nbVec, unsigned dim, unsigned char K)
+{
+#pragma omp parallel for
+    for(unsigned i = 0; i < nbVec; ++i)
+    {
+        for(unsigned j = 0; j < dim; ++j)
+            means[c[i] * dim + j] += data[i * dim  + j];
+        ++card[c[i]];
+    }
+    for(unsigned i = 0; i < K; ++i)
+        for(unsigned j = 0; j < dim; ++j)
+            means[i * dim + j] /= card[i];
+}
+
+
+// ----- DEFAULT FUNCTIONS -----
 static inline double distance(float *vec1, float *vec2, unsigned dim) {
     double dist = 0;
     for(unsigned i = 0; i < dim; ++i)
@@ -104,8 +121,8 @@ static inline unsigned char classify(float *vec, float *means, unsigned dim,
 }
 
 // Compute the means of each cluster
-static inline void means_compute(float *means, unsigned char *c, float *data, unsigned *card,
-        unsigned nbVec, unsigned dim, unsigned char K)
+static inline void means_compute(float *means, unsigned char *c, float *data,
+        unsigned *card, unsigned nbVec, unsigned dim, unsigned char K)
 {
 #pragma omp parallel for
     for(unsigned i = 0; i < nbVec; ++i)
