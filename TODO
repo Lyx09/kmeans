@@ -1,4 +1,11 @@
-[ ] Multi-threading
-[ ] Intel builtins
-[ ] -Ofast
-[ ] Makefile
+[X] Multi-threading
+[X] Intel intrinsics
+[X] -Ofast
+[X] Makefile
+[ ] Use load instead of loadu ?
+[ ] Actually improve Kmeans with kmeans++ or only check borders : https://annals-csis.org/proceedings/2014/pliks/258.pdf
+[ ] Better use of OpenMP ?
+[ ] Pragma omp simd ?
+[ ] Faster sqrt ?
+[ ] Faster random ?
+
