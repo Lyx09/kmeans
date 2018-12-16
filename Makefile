@@ -16,8 +16,8 @@ kmeans: ${SRC}
 time: kmeans
 	time -p ./kmeans 3 2 .01 2351 900000 Xtrain.dat output.dat
 
-eval:
-	python eval.py
+eval: time
+	python eval.py output.dat Ytrain.dat
 
 fast: CFLAGS += -O3
 fast: kmeans
