@@ -1,3 +1,6 @@
+//To use aligned_alloc
+#define _ISOC11_SOURCE
+
 #include <err.h>
 #include <fcntl.h>
 #include <float.h>
@@ -111,9 +114,9 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
     unsigned iter = 0;
     double e, diffErr = DBL_MAX, Err = DBL_MAX;
 
-    float *means = malloc(dim * K * sizeof(float));           // Matrix of dimension of each cluster
-    unsigned *card = malloc(K * sizeof(unsigned));            // Used to compute the mean
-    unsigned char* c = malloc(sizeof(unsigned char) * nbVec); // Vector[i] belongs to cluster c[i]
+    float *means = aligned_alloc(32, dim * K * sizeof(float));
+    unsigned *card = aligned_alloc(32, K * sizeof(unsigned));
+    unsigned char* c =  aligned_alloc(32, sizeof(unsigned char) * nbVec);
 
     // Random init of c
     for(unsigned i = 0; i < nbVec; ++i)
@@ -121,7 +124,6 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
 
     while ((iter < maxIter) && (diffErr > minErr))
     {
-        // update Mean
         memset(means, 0, dim * K * sizeof(float));            // Use bzero() instead ?
         memset(card, 0, K * sizeof(unsigned));                // Use bzero() instead ?
         means_compute(means, c, data, card, nbVec, dim, K);
