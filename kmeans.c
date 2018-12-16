@@ -128,6 +128,7 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
         diffErr = Err;
         Err = 0.;
 
+#pragma omp parallel for
         for(unsigned i = 0; i < nbVec; ++i)
         {
             c[i] = classify(data + i * dim, means, dim, K, &e);
