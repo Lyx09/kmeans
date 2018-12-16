@@ -97,6 +97,7 @@ static inline unsigned char classify(float *vec, float *means, unsigned dim,
 static inline void means_compute(float *means, unsigned char *c, float *data, unsigned *card,
         unsigned nbVec, unsigned dim, unsigned char K)
 {
+#pragma omp parallel for
     for(unsigned i = 0; i < nbVec; ++i)
     {
         for(unsigned j = 0; j < dim; ++j)
@@ -131,6 +132,7 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
         diffErr = Err;
         Err = 0.;
 
+#pragma omp parallel for
         for(unsigned i = 0; i < nbVec; ++i)
         {
             c[i] = classify(data + i * dim, means, dim, K, &e);
