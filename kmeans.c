@@ -103,11 +103,9 @@ static inline void means_compute(float *means, unsigned char *c, float *data, un
             means[c[i] * dim + j] += data[i * dim  + j];
         ++card[c[i]];
     }
-    printf("1\n");
     for(unsigned i = 0; i < K; ++i)
         for(unsigned j = 0; j < dim; ++j)
             means[i * dim + j] /= card[i];
-    printf("2\n");
 }
 
 unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim, 
