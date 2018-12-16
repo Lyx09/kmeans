@@ -64,15 +64,24 @@ void writeClassinFloatFormat(unsigned char *data, unsigned nbelt, char *fileName
 // ----- SIMD FUNCTIONS -----
 static inline double distance_simd(float *vec1, float *vec2, unsigned dim) {
     double dist = 0;
-    for(unsigned i = 0; i < dim; i += 8)
+    unsigned i = 0;
+    for(; i < dim - 8; i += 8)
     {
-        __m256 v1 = _mm256_load_ps(vec1);
-        __m256 v2 = _mm256_load_ps(vec2);
+        __m256 v1 = _mm256_loadu_ps(&vec1[i]);
+        __m256 v2 = _mm256_loadu_ps(&vec2[i]);
         __m256 d = _mm256_sub_ps(v1, v2);
         d = _mm256_mul_ps(d, d);
         float *res = (float *)&d;
         dist += res[0] + res[1] + res[2] + res[3] + res[4] + res[5] + res[6] + res[7];
     }
+
+
+    for(; i < dim; ++i)
+    {
+        double d = vec1[i] - vec2[i];
+        dist += d * d;
+    }
+
     return sqrt(dist); //sqrt can be removed but it will break the error
 }
 
@@ -112,7 +121,7 @@ static inline unsigned char classify(float *vec, float *means, unsigned dim,
 
     for(unsigned i = 0; i < K; ++i)
     {
-        dist = distance(vec, means + i * dim, dim);
+        dist = distance_simd(vec, means + i * dim, dim);
         if(dist < distMin)
         {
             distMin = dist;
@@ -128,14 +137,14 @@ static inline unsigned char classify(float *vec, float *means, unsigned dim,
 static inline void means_compute(float *means, unsigned char *c, float *data,
         unsigned *card, unsigned nbVec, unsigned dim, unsigned char K)
 {
-#pragma omp parallel for
+//#pragma omp parallel for
     for(unsigned i = 0; i < nbVec; ++i)
     {
         for(unsigned j = 0; j < dim; ++j)
             means[c[i] * dim + j] += data[i * dim  + j];
         ++card[c[i]];
     }
-#pragma omp critical
+//#pragma omp critical
     for(unsigned i = 0; i < K; ++i)
         for(unsigned j = 0; j < dim; ++j)
             means[i * dim + j] /= card[i];
@@ -147,9 +156,9 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
     unsigned iter = 0;
     double e, diffErr = DBL_MAX, Err = DBL_MAX;
 
-    float *means = aligned_alloc(32, dim * K * sizeof(float));
-    unsigned *card = aligned_alloc(32, K * sizeof(unsigned));
-    unsigned char* c =  aligned_alloc(32, sizeof(unsigned char) * nbVec);
+    float *means = malloc(dim * K * sizeof(float));
+    unsigned *card = malloc(K * sizeof(unsigned));
+    unsigned char* c = malloc(sizeof(unsigned char) * nbVec);
 
     // Random init of c
     for(unsigned i = 0; i < nbVec; ++i)
@@ -161,12 +170,12 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
         memset(card, 0, K * sizeof(unsigned));                // Use bzero() instead ?
         means_compute(means, c, data, card, nbVec, dim, K);
 
-#pragma omp critical
+//#pragma omp critical
 
         diffErr = Err;
         Err = 0.;
 
-#pragma omp parallel for
+//#pragma omp parallel for
         for(unsigned i = 0; i < nbVec; ++i)
         {
             c[i] = classify(data + i * dim, means, dim, K, &e);
