@@ -61,10 +61,22 @@ void writeClassinFloatFormat(unsigned char *data, unsigned nbelt, char *fileName
     fclose(fp);
 }
 
-static inline double distance(float *vec1, float *vec2, unsigned dim) {
+// ----- SIMD FUNCTIONS -----
+static inline double distance_simd(float *vec1, float *vec2, unsigned dim) {
+    //_mm256_load_ps
     double dist = 0;
     for(unsigned i = 0; i < dim; ++i, ++vec1, ++vec2) {
         double d = *vec1 - *vec2;
+        dist += d * d;
+    }
+    return sqrt(dist); //sqrt can be removed but it will break the error
+}
+
+static inline double distance(float *vec1, float *vec2, unsigned dim) {
+    double dist = 0;
+    for(unsigned i = 0; i < dim; ++i)
+    {
+        double d = vec1[i] - vec2[i];
         dist += d * d;
     }
     return sqrt(dist); //sqrt can be removed but it will break the error
