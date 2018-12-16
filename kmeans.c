@@ -67,9 +67,7 @@ static inline double distance(float *vec1, float *vec2, unsigned dim) {
         double d = *vec1 - *vec2;
         dist += d * d;
     }
-    //I removed the sqrt on dist because we only care about the comparison
-    //But now the error is broken (it was based on the minimal distance)
-    return dist;
+    return sqrt(dist);
 }
 
 // Classify data
