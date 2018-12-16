@@ -30,6 +30,7 @@ fastest: CFLAGS += -Ofast # The highest level of optimization possible
 fastest: CFLAGS += -fno-signed-zeros # Optimizations for FP arith to ignore the sign of zero
 fastest: CFLAGS += -freciprocal-math # Allow the reciprocal of a value to be used instead of dividing by the value if this enables optimizations.
 fastest: CFLAGS += -ffp-contract=fast # enables floating-point expression contraction such as forming of fused multiply-add operations if the target has native support for them.
+fastest: CFLAGS += -finline-functions # Inlines all "simple functions"
 fastest: kmeans
 
 danger: CFLAGS += -march=native
@@ -38,6 +39,7 @@ danger: CFLAGS += -fno-signed-zeros
 danger: CFLAGS += -freciprocal-math
 danger: CFLAGS += -ffp-contract=fast
 danger: CFLAGS += -funroll-loops
+danger: CFLAGS += -finline-functions
 danger: kmeans
 
 vectorize: CFLAGS += -O2 -ftree-vectorize -msse2 -ftree-vectorizer-verbose=5
