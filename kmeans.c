@@ -121,8 +121,8 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
     while ((iter < maxIter) && (diffErr > minErr))
     {
         // update Mean
-        memset(means, 0, dim * K * sizeof(float));
-        memset(card, 0, K * sizeof(unsigned));
+        memset(means, 0, dim * K * sizeof(float));            // Use bzero() instead ?
+        memset(card, 0, K * sizeof(unsigned));                // Use bzero() instead ?
         means_compute(means, c, data, card, nbVec, dim, K);
 
         diffErr = Err;
