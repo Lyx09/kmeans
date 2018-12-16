@@ -116,7 +116,7 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
 
     // Random init of c
     for(unsigned i = 0; i < nbVec; ++i)
-        c[i] = rand() / (RAND_MAX + 1.) * K;                  // Optimize rand ?
+        c[i] = rand() / (RAND_MAX + 1.) * K;                  // Optimize rand ? rand % K ?
 
     while ((iter < maxIter) && (diffErr > minErr))
     {
