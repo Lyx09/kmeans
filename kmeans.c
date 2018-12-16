@@ -99,7 +99,6 @@ static inline void means_compute_simd(float *means, unsigned char *c,
             __m256 dt = _mm256_loadu_ps(&data[i * dim  + j]);
             __m256 res = _mm256_add_ps(mn, dt);
             _mm256_storeu_ps(&means[c[i] * dim + j], res);
-            //means[c[i] * dim + j] += data[i * dim  + j];
         }
         for(; j < dim; ++j)
             means[c[i] * dim + j] += data[i * dim  + j];
