@@ -62,7 +62,8 @@ void writeClassinFloatFormat(unsigned char *data, unsigned nbelt, char *fileName
 }
 
 // ----- SIMD FUNCTIONS -----
-static inline double distance_simd(float *vec1, float *vec2, unsigned dim) {
+static inline double distance_simd(float *vec1, float *vec2, unsigned dim)
+{
     double dist = 0;
     unsigned i = 0;
     for(; i < dim - 8; i += 8)
@@ -91,7 +92,16 @@ static inline void means_compute_simd(float *means, unsigned char *c,
 #pragma omp parallel for
     for(unsigned i = 0; i < nbVec; ++i)
     {
-        for(unsigned j = 0; j < dim; ++j)
+        unsigned j = 0;
+        for(; j < dim - 8; j += 8)
+        {
+            __m256 mn = _mm256_loadu_ps(&means[c[i] * dim + j]);
+            __m256 dt = _mm256_loadu_ps(&data[i * dim  + j]);
+            __m256 res = _mm256_add_ps(mn, dt);
+            _mm256_storeu_ps(&means[c[i] * dim + j], res);
+            //means[c[i] * dim + j] += data[i * dim  + j];
+        }
+        for(; j < dim; ++j)
             means[c[i] * dim + j] += data[i * dim  + j];
         ++card[c[i]];
     }
@@ -102,7 +112,8 @@ static inline void means_compute_simd(float *means, unsigned char *c,
 
 
 // ----- DEFAULT FUNCTIONS -----
-static inline double distance(float *vec1, float *vec2, unsigned dim) {
+static inline double distance(float *vec1, float *vec2, unsigned dim)
+{
     double dist = 0;
     for(unsigned i = 0; i < dim; ++i)
     {
@@ -168,7 +179,7 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
     {
         memset(means, 0, dim * K * sizeof(float));            // Use bzero() instead ?
         memset(card, 0, K * sizeof(unsigned));                // Use bzero() instead ?
-        means_compute(means, c, data, card, nbVec, dim, K);
+        means_compute_simd(means, c, data, card, nbVec, dim, K);
 
 //#pragma omp critical
 
