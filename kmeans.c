@@ -72,11 +72,10 @@ static inline double distance_simd(float *vec1, float *vec2, unsigned dim)
         __m256 v2 = _mm256_loadu_ps(&vec2[i]);
         __m256 d = _mm256_sub_ps(v1, v2);
         d = _mm256_mul_ps(d, d);
+        //__m256d d1 = _mm256_cvtps_pd();   // Do I need to convert to double ?
         float *res = (float *)&d;
         dist += res[0] + res[1] + res[2] + res[3] + res[4] + res[5] + res[6] + res[7];
     }
-
-
     for(; i < dim; ++i)
     {
         double d = vec1[i] - vec2[i];
@@ -89,7 +88,7 @@ static inline double distance_simd(float *vec1, float *vec2, unsigned dim)
 static inline void means_compute_simd(float *means, unsigned char *c,
         float *data, unsigned *card, unsigned nbVec, unsigned dim, unsigned char K)
 {
-#pragma omp parallel for
+//#pragma omp parallel for  // Strange behavior
     for(unsigned i = 0; i < nbVec; ++i)
     {
         unsigned j = 0;
