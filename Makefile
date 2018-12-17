@@ -14,9 +14,11 @@ kmeans: ${SRC}
 	${CC} -o kmeans $^ ${CFLAGS} ${LFLAGS}
 
 time: kmeans
+	#time -p ./kmeans 3 20 .01 2351 200000 Xtest.dat output.dat
 	time -p ./kmeans 3 2 .01 2351 900000 Xtrain.dat output.dat
 
 eval: time
+	#python eval.py output.dat Ytest.dat
 	python eval.py output.dat Ytrain.dat
 
 fast: CFLAGS += -O3
