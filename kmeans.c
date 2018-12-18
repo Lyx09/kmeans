@@ -188,6 +188,7 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
     unsigned char* c = malloc(sizeof(unsigned char) * nbVec);
 
     // Random init of c
+#pragma omp parallel for                                      // Not the most useful
     for(unsigned i = 0; i < nbVec; ++i)
         c[i] = rand() / (RAND_MAX + 1.) * K;                  // Optimize rand ? rand % K ?
 
