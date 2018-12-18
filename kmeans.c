@@ -121,9 +121,8 @@ static inline void means_compute_simd(float *means, unsigned char *c,
 //#pragma omp parallel for  // Strange behavior
     for(unsigned i = 0; i < nbVec; ++i)
     {
-        unsigned j;
-#pragma omp parallel for
-        for(j = 0; j < dim - 8; j += 8)
+        unsigned j = 0;
+        for(; j < dim - 8; j += 8)
         {
             __m256 mn = _mm256_loadu_ps(&means[c[i] * dim + j]);
             __m256 dt = _mm256_loadu_ps(&data[i * dim  + j]);
@@ -135,10 +134,9 @@ static inline void means_compute_simd(float *means, unsigned char *c,
         ++card[c[i]];
     }
 
-#pragma omp parallel for
     for(unsigned i = 0; i < K; ++i)
     {
-        unsigned j;
+        unsigned j = 0;
         /*  Need to convert char to float
         for(; j < dim; ++j)
         {
@@ -149,8 +147,7 @@ static inline void means_compute_simd(float *means, unsigned char *c,
             _mm256_storeu_ps(&means[i * dim + j], res);
         }
         */
-#pragma omp parallel for
-        for(j = 0; j < dim; ++j)
+        for(; j < dim; ++j)
             means[i * dim + j] /= card[i];
     }
 }
@@ -188,7 +185,6 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
     unsigned char* c = malloc(sizeof(unsigned char) * nbVec);
 
     // Random init of c
-#pragma omp parallel for                                      // Not the most useful
     for(unsigned i = 0; i < nbVec; ++i)
         c[i] = rand() / (RAND_MAX + 1.) * K;                  // Optimize rand ? rand % K ?
 
