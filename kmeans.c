@@ -135,9 +135,10 @@ static inline void means_compute_simd(float *means, unsigned char *c,
         ++card[c[i]];
     }
 
+#pragma omp parallel for
     for(unsigned i = 0; i < K; ++i)
     {
-        unsigned j = 0;
+        unsigned j;
         /*  Need to convert char to float
         for(; j < dim; ++j)
         {
@@ -148,7 +149,8 @@ static inline void means_compute_simd(float *means, unsigned char *c,
             _mm256_storeu_ps(&means[i * dim + j], res);
         }
         */
-        for(; j < dim; ++j)
+#pragma omp parallel for
+        for(j = 0; j < dim; ++j)
             means[i * dim + j] /= card[i];
     }
 }
