@@ -159,7 +159,7 @@ static inline unsigned char classify(float *vec, float *means, unsigned dim,
     unsigned char min = 0;
     float dist, distMin = FLT_MAX;
 
-#pragma omp parallel for
+    // parallelizing this for loop increse compute time
     for(unsigned i = 0; i < K; ++i)
     {
         dist = distance_simd(vec, means + i * dim, dim);
