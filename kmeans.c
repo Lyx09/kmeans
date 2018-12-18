@@ -133,7 +133,6 @@ static inline void means_compute_simd(float *means, unsigned char *c,
         ++card[c[i]];
     }
 
-#pragma omp critical
     for(unsigned i = 0; i < K; ++i)
     {
         unsigned j = 0;
@@ -193,8 +192,6 @@ unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim,
         memset(means, 0, dim * K * sizeof(float));            // Use bzero() instead ?
         memset(card, 0, K * sizeof(unsigned));                // Use bzero() instead ?
         means_compute_simd(means, c, data, card, nbVec, dim, K);
-
-#pragma omp critical
 
         diffErr = Err;
         Err = 0.;
