@@ -61,6 +61,35 @@ void writeClassinFloatFormat(unsigned char *data, unsigned nbelt, char *fileName
     fclose(fp);
 }
 
+// ----- DEFAULT FUNCTIONS -----
+static inline double distance(float *vec1, float *vec2, unsigned dim)
+{
+    double dist = 0;
+    for(unsigned i = 0; i < dim; ++i)
+    {
+        double d = vec1[i] - vec2[i];
+        dist += d * d;
+    }
+    return sqrt(dist); //sqrt can be removed but it will break the error
+}
+
+// Compute the means of each cluster
+static inline void means_compute(float *means, unsigned char *c, float *data,
+        unsigned *card, unsigned nbVec, unsigned dim, unsigned char K)
+{
+#pragma omp parallel for
+    for(unsigned i = 0; i < nbVec; ++i)
+    {
+        for(unsigned j = 0; j < dim; ++j)
+            means[c[i] * dim + j] += data[i * dim  + j];
+        ++card[c[i]];
+    }
+#pragma omp for collapse(2)
+    for(unsigned i = 0; i < K; ++i)
+        for(unsigned j = 0; j < dim; ++j)
+            means[i * dim + j] /= card[i];
+}
+
 // ----- SIMD FUNCTIONS -----
 static inline double distance_simd(float *vec1, float *vec2, unsigned dim)
 {
@@ -124,18 +153,6 @@ static inline void means_compute_simd(float *means, unsigned char *c,
 }
 
 
-// ----- DEFAULT FUNCTIONS -----
-static inline double distance(float *vec1, float *vec2, unsigned dim)
-{
-    double dist = 0;
-    for(unsigned i = 0; i < dim; ++i)
-    {
-        double d = vec1[i] - vec2[i];
-        dist += d * d;
-    }
-    return sqrt(dist); //sqrt can be removed but it will break the error
-}
-
 // Classify data
 static inline unsigned char classify(float *vec, float *means, unsigned dim, 
         unsigned char K, double *e)
@@ -155,23 +172,6 @@ static inline unsigned char classify(float *vec, float *means, unsigned dim,
 
     *e = distMin;
     return min;
-}
-
-// Compute the means of each cluster
-static inline void means_compute(float *means, unsigned char *c, float *data,
-        unsigned *card, unsigned nbVec, unsigned dim, unsigned char K)
-{
-#pragma omp parallel for
-    for(unsigned i = 0; i < nbVec; ++i)
-    {
-        for(unsigned j = 0; j < dim; ++j)
-            means[c[i] * dim + j] += data[i * dim  + j];
-        ++card[c[i]];
-    }
-#pragma omp critical
-    for(unsigned i = 0; i < K; ++i)
-        for(unsigned j = 0; j < dim; ++j)
-            means[i * dim + j] /= card[i];
 }
 
 unsigned char *Kmeans(float *data, unsigned nbVec, unsigned dim, 
