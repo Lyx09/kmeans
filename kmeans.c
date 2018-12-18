@@ -94,8 +94,9 @@ static inline void means_compute(float *means, unsigned char *c, float *data,
 static inline double distance_simd(float *vec1, float *vec2, unsigned dim)
 {
     double dist = 0;
-    unsigned i = 0;
-    for(; i < dim - 8; i += 8)
+    unsigned i;
+    // parallel for here takes more time
+    for(i = 0; i < dim - 8; i += 8)
     {
         __m256 v1 = _mm256_loadu_ps(&vec1[i]);
         __m256 v2 = _mm256_loadu_ps(&vec2[i]);
@@ -120,8 +121,9 @@ static inline void means_compute_simd(float *means, unsigned char *c,
 //#pragma omp parallel for  // Strange behavior
     for(unsigned i = 0; i < nbVec; ++i)
     {
-        unsigned j = 0;
-        for(; j < dim - 8; j += 8)
+        unsigned j;
+#pragma omp parallel for
+        for(j = 0; j < dim - 8; j += 8)
         {
             __m256 mn = _mm256_loadu_ps(&means[c[i] * dim + j]);
             __m256 dt = _mm256_loadu_ps(&data[i * dim  + j]);
@@ -151,7 +153,6 @@ static inline void means_compute_simd(float *means, unsigned char *c,
     }
 }
 
-
 // Classify data
 static inline unsigned char classify(float *vec, float *means, unsigned dim, 
         unsigned char K, double *e)
@@ -159,6 +160,7 @@ static inline unsigned char classify(float *vec, float *means, unsigned dim,
     unsigned char min = 0;
     float dist, distMin = FLT_MAX;
 
+#pragma omp parallel for
     for(unsigned i = 0; i < K; ++i)
     {
         dist = distance_simd(vec, means + i * dim, dim);
