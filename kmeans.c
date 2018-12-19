@@ -118,7 +118,7 @@ static inline double distance_simd(float *vec1, float *vec2, unsigned dim)
 static inline void means_compute_simd(float *means, unsigned char *c,
         float *data, unsigned *card, unsigned nbVec, unsigned dim, unsigned char K)
 {
-//#pragma omp parallel for  // Strange behavior
+#pragma omp parallel for
     for(unsigned i = 0; i < nbVec; ++i)
     {
         unsigned j = 0;
@@ -129,6 +129,7 @@ static inline void means_compute_simd(float *means, unsigned char *c,
             __m256 res = _mm256_add_ps(mn, dt);
             _mm256_storeu_ps(&means[c[i] * dim + j], res);
         }
+#pragma omp critical // Important, else values are broken
         for(; j < dim; ++j)
             means[c[i] * dim + j] += data[i * dim  + j];
         ++card[c[i]];
